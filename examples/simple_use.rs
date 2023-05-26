@@ -7,11 +7,7 @@ fn fibo(n: usize) -> u32 {
     } else if n == 1 {
         return 1;
     }
-
-    let n_m1_value = fibo(n - 1);
-    let n_m2_value = fibo(n - 2);
-
-    n_m1_value + n_m2_value
+    fibo(n - 1).saturating_add(fibo(n - 2))
 }
 
 fn main() {

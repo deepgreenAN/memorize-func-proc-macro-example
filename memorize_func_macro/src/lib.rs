@@ -81,25 +81,30 @@ pub fn memorize_func(
 
     // 関数ブロック
     let block = &ast.block;
-    // 関数の引数名
-    let fn_input_name_iter = fn_input.iter().filter_map(|input| {
-        match input {
-            // selfなどの予約語
-            FnArg::Receiver(_) => None,
-            // 引数:型
-            FnArg::Typed(pat_type) => Some(&pat_type.pat),
-        }
-    });
+    // 関数の引数名を羅列したトークン
+    let fn_input_names = {
+        let fn_input_name_iter = fn_input.iter().filter_map(|input| {
+            match input {
+                // selfなどの予約語
+                FnArg::Receiver(_) => None,
+                // 引数:型
+                FnArg::Typed(pat_type) => Some(&pat_type.pat),
+            }
+        });
+        quote! {#(#fn_input_name_iter),*}
+    };
     // 関数の引数の型を羅列したトークン
-    let fn_input_ty_iter = fn_input.iter().filter_map(|input| {
-        match input {
-            // selfなどの予約語
-            FnArg::Receiver(_) => None,
-            // 引数:型
-            FnArg::Typed(pat_type) => Some(&pat_type.ty),
-        }
-    });
-    let fn_input_names = quote! {#(#fn_input_name_iter),*};
+    let fn_input_types = {
+        let fn_input_ty_iter = fn_input.iter().filter_map(|input| {
+            match input {
+                // selfなどの予約語
+                FnArg::Receiver(_) => None,
+                // 引数:型
+                FnArg::Typed(pat_type) => Some(&pat_type.ty),
+            }
+        });
+        quote! {#(#fn_input_ty_iter),*}
+    };
 
     // 関数の返り値の型
     let fn_output_ty = match fn_output {
@@ -151,7 +156,7 @@ pub fn memorize_func(
         static #global_map_name: ::memorize_func::Lazy<
             std::sync::Mutex<
                 ::memorize_func::LruCache<
-                    (#(#fn_input_ty_iter),*), #fn_output_ty
+                    (#fn_input_types), #fn_output_ty
                 >
             >
         > = ::memorize_func::Lazy::new(||

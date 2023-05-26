@@ -11,10 +11,7 @@ fn fibo_original(n: usize) -> u32 {
         return 1;
     }
 
-    let n_m1_value = fibo_original(n - 1);
-    let n_m2_value = fibo_original(n - 2);
-
-    n_m1_value + n_m2_value
+    fibo_original(n - 1) + fibo_original(n - 2)
 }
 
 fn fibo_cached(n: usize) -> u32 {
@@ -31,10 +28,7 @@ fn fibo_cached(n: usize) -> u32 {
         return 1;
     }
 
-    let n_m1_value = fibo_cached(n - 1);
-    let n_m2_value = fibo_cached(n - 2);
-
-    let answer = n_m1_value + n_m2_value;
+    let answer = fibo_cached(n - 1) + fibo_cached(n - 2);
 
     // キャッシュに追加
     {
